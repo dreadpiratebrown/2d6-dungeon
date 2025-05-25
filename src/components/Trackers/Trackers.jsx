@@ -26,7 +26,13 @@ export const Trackers = () => {
 
   const renderConditionTrack = (condition, label) => (
     <>
-      <div className={styles[condition]}>{label}</div>
+      <div className={styles[condition]}>
+        {label}
+        <br />
+        <button onClick={() => store.setTrackers({ [condition]: 0 })}>
+          Reset
+        </button>
+      </div>
       {Array.from({ length: 8 }).map((_, index) => (
         <div key={index} className={styles.value}>
           <input
