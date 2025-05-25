@@ -1,0 +1,81 @@
+.setup {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 3px 3px 18px 0px rgba(0, 0, 0, 0.58);
+  overflow: hidden;
+  width: 22rem;
+}
+
+.slider {
+  display: flex;
+  transition: transform 500ms cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  width: 110rem;
+}
+
+.slider.stepOne {
+  transform: translateX(0);
+}
+
+.slider.stepTwo {
+  transform: translateX(-22rem);
+}
+
+.slider.stepThree {
+  transform: translateX(-44rem);
+}
+
+.slider.stepFour {
+  transform: translateX(-66rem);
+}
+
+.slider.stepFive {
+  transform: translateX(-88rem);
+}
+
+.slider.stepSix {
+  transform: translateX(-110rem);
+}
+
+.step {
+  flex: 0 0 22rem;
+}
+
+.cardTop {
+  border-bottom: 1px solid #000;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.cardBottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
+  text-wrap: balance;
+}
+
+.cardBottom input[type="text"] {
+  border-radius: 8px;
+  line-height: 1.5;
+  padding: 0.5rem;
+}
+
+.cardBottom label:has(input) {
+  align-items: baseline;
+  display: flex;
+  gap: 0.25rem;
+  text-align: left;
+}
+
+.cardBottom button {
+  background: var(--blue);
+  margin-top: 0.5rem;
+}

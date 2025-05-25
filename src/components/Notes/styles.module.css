@@ -1,0 +1,10 @@
+.label {
+  background: var(--yellow);
+  text-transform: uppercase;
+}
+
+.label,
+.value {
+  border: 1px solid #000;
+  padding: 0.5rem;
+}

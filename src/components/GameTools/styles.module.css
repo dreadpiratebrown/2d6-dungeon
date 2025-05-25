@@ -1,0 +1,15 @@
+.tools {
+  text-align: left;
+}
+
+.tools div {
+  border-bottom: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.tools button {
+  background: var(--blue);
+}
