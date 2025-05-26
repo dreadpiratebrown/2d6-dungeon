@@ -39,7 +39,7 @@ export const onMouseMove = (e, state) => {
 };
 
 export const onClick = (e, state) => {
-  const { canvas, ctx, CELL_SIZE, GRID_SIZE, grid, store } = state;
+  const { canvas, ctx, CELL_SIZE, GRID_SIZE, grid, store, secretDoor } = state;
   const { rooms, doors } = useBoundStore.getState();
   if (state.pendingDoors > 0 && state.currentRoom) {
     const rect = canvas.getBoundingClientRect();
@@ -131,6 +131,73 @@ export const onClick = (e, state) => {
     }
 
     return; // skip other clicks during this phase
+  }
+
+  if (secretDoor) {
+    rooms.forEach((room) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const gx = Math.floor(mx / CELL_SIZE);
+      const gy = Math.floor(my / CELL_SIZE);
+
+      // Check if in dashed border area
+      const inRangeX = gx >= room.gridX - 1 && gx <= room.gridX + room.w;
+      const inRangeY = gy >= room.gridY - 1 && gy <= room.gridY + room.h;
+      const isEdge =
+        gx === room.gridX - 1 ||
+        gx === room.gridX + room.w ||
+        gy === room.gridY - 1 ||
+        gy === room.gridY + room.h;
+
+      const notInsideRoom =
+        gx < room.gridX ||
+        gx >= room.gridX + room.w ||
+        gy < room.gridY ||
+        gy >= room.gridY + room.h;
+
+      const occupied =
+        grid[gy]?.[gx] || doors.some((d) => d.gridX === gx && d.gridY === gy);
+
+      if (inRangeX && inRangeY && isEdge && notInsideRoom && !occupied) {
+        let direction = null;
+        if (gx === room.gridX - 1) direction = "left";
+        else if (gx === room.gridX + room.w) direction = "right";
+        else if (gy === room.gridY - 1) direction = "top";
+        else if (gy === room.gridY + room.h) direction = "bottom";
+
+        const door = {
+          x: gx * CELL_SIZE,
+          y: gy * CELL_SIZE,
+          w: CELL_SIZE,
+          h: CELL_SIZE,
+          gridX: gx,
+          gridY: gy,
+          used: false,
+          direction,
+          locked: false,
+          type: "secret",
+          id: doors.length,
+          lockQuality: 0,
+        };
+        doors.push(door);
+        store.setDungeon({ doors });
+        state.secretDoor = false;
+        render(
+          ctx,
+          canvas,
+          CELL_SIZE,
+          GRID_SIZE,
+          rooms,
+          doors,
+          state.pendingDoors,
+          state.currentRoom,
+          state.floatingRoom
+        );
+      }
+    });
+
+    return;
   }
 
   const rect = canvas.getBoundingClientRect();
@@ -332,6 +399,21 @@ export const onKeyDown = (e, state) => {
       state.floatingRoom
     );
     store.addMessage("Room placement cancelled.");
+  }
+  if (e.key === "Escape" && state.secretDoor) {
+    state.secretDoor = false;
+    render(
+      ctx,
+      canvas,
+      CELL_SIZE,
+      GRID_SIZE,
+      rooms,
+      doors,
+      pendingDoors,
+      currentRoom,
+      state.floatingRoom
+    );
+    store.addMessage("Secret door placement cancelled.");
   }
   if (e.key === "Escape" && state.pendingDoors > 0) {
     state.pendingDoors--;

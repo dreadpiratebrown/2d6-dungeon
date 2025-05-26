@@ -76,13 +76,23 @@ export function drawDoor(door, ctx) {
   ctx.fillRect(door.x, door.y, door.w, door.h);
   ctx.strokeStyle = door.locked ? "red" : "black";
   ctx.strokeRect(door.x, door.y, door.w, door.h);
-  const img = getDoorImage(door.type, door.direction);
-  if (img.complete) {
-    ctx.drawImage(img, door.x, door.y, door.w, door.h);
+  if (door.type === "secret") {
+    ctx.fillStyle = "#000";
+    ctx.font = "bold 14px sans-serif";
+    const letter = "S";
+    const textWidth = ctx.measureText(letter).width;
+    const textX = door.x + door.w / 2 - textWidth / 2;
+    const textY = door.y + door.h / 2 + 5;
+    ctx.fillText(letter, textX, textY);
   } else {
-    img.onload = () => {
+    const img = getDoorImage(door.type, door.direction);
+    if (img.complete) {
       ctx.drawImage(img, door.x, door.y, door.w, door.h);
-    };
+    } else {
+      img.onload = () => {
+        ctx.drawImage(img, door.x, door.y, door.w, door.h);
+      };
+    }
   }
 }
 

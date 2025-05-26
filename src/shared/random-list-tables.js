@@ -210,7 +210,7 @@ export const got1 = {
     },
     {
       roll: [6],
-      result: "Radacine the Radix",
+      result: "Radacina the Radix",
     },
   ],
 };

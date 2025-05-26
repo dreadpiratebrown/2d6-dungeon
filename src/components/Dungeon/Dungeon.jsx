@@ -1,23 +1,28 @@
-import { useEffect } from "react";
-import { drawDoor, drawGrid, render } from "./gridRenderer";
+import { useEffect, useRef, useState } from "react";
+import { drawDashedBorder, drawDoor, drawGrid, render } from "./gridRenderer";
 import { createRoom, setRedrawDoorHandler } from "./dungeonManager";
 import { onMouseMove, onClick, onKeyDown } from "./events";
 import { useBoundStore } from "../../store/boundStore";
 import styles from "./styles.module.css";
 
 export const Dungeon = () => {
+  const [context, setContext] = useState({});
   const store = useBoundStore();
+  const CELL_SIZE = 20;
+  const GRID_SIZE = 30;
+  const stateRef = useRef(null);
 
   useEffect(() => {
     const canvas = document.getElementById("dungeonCanvas");
     const ctx = canvas.getContext("2d");
+    setContext(ctx);
 
     const state = {
       store,
       canvas,
       ctx,
-      CELL_SIZE: 20,
-      GRID_SIZE: 30,
+      CELL_SIZE,
+      GRID_SIZE,
       grid: Array.from({ length: 30 }, () => Array(30).fill(null)),
       rooms: store.rooms,
       doors: store.doors,
@@ -26,7 +31,10 @@ export const Dungeon = () => {
       activeDoor: null,
       pendingDoors: 0,
       currentRoom: null,
+      secretDoor: false,
     };
+
+    stateRef.current = state;
 
     setRedrawDoorHandler((doorId) => {
       const door = useBoundStore.getState().doors.find((d) => d.id === doorId);
@@ -88,6 +96,29 @@ export const Dungeon = () => {
     init();
   }, []);
 
+  const addSecretDoor = () => {
+    const state = stateRef.current;
+    state.secretDoor = true;
+    let coverage = 0;
+    store.rooms.forEach((room) => {
+      const area = room.w * room.h;
+      coverage += area;
+    });
+    const percentFull = parseFloat(coverage / (GRID_SIZE * GRID_SIZE)).toFixed(
+      2
+    );
+    if (percentFull >= 0.5) {
+      alert(
+        "You have explored more than 50% of the dungeon. Consider adding stairs down to the next level instead."
+      );
+      return;
+    } else {
+      store.rooms.forEach((room) => {
+        drawDashedBorder(room, context, CELL_SIZE);
+      });
+    }
+  };
+
   return (
     <>
       <h1>Level 1: The Entry</h1>
@@ -97,6 +128,9 @@ export const Dungeon = () => {
         width="600"
         height="600"
       ></canvas>
+      <button onClick={addSecretDoor}>Create Secret Door</button>
+      <button>Create Shaft to Outside</button>
+      <button>Create Stairs Down</button>
     </>
   );
 };
