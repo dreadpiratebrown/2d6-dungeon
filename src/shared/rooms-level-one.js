@@ -130,7 +130,7 @@ export const largeRooms = [
     roll: 8,
     name: "Sparring Chamber",
     description:
-      "This is a training room, where there is a circle of sand in which a WARRIOR and a SCOUT are sparring. They turn and attack. If you survive roll on #BT1+2.",
+      "This is a training room, where there is a circle of sand in which a WARRIOR and a SCOUT are sparring. They turn and attack. If you survive roll on #BT1+2. <event:combat:WARRIOR:SCOUT>",
     exits: "wooden doors",
     unique: false,
   },

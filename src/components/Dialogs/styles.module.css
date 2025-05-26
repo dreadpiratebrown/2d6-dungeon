@@ -3,6 +3,11 @@
   border: none;
 }
 
+.cardGrid {
+  display: flex;
+  gap: 1rem;
+}
+
 .card {
   background: #fff;
   border-radius: 1rem;
@@ -29,6 +34,10 @@
 .cardBottom button {
   background: var(--blue);
   margin-top: 0.5rem;
+}
+
+.inventory {
+  white-space: pre-line;
 }
 
 .combatUi {
