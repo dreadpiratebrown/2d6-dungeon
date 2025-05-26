@@ -254,12 +254,13 @@ export const Combat = ({ openModal, closeModal, enemyIds, onDeath }) => {
       if (m?.special) {
         setCombatLog((prev) => [...prev, `Special: ${m.special}`]);
       }
+      let numAttacks = [...enemyAttacks, attackingEnemyIndex];
       setEnemyAttacks((prev) => [...prev, attackingEnemyIndex]);
       if (newHp === 0 && !playerIsDead) {
         setPlayerIsDead(true);
         deadRef.current?.showModal();
       } else {
-        if (enemyAttacks.length === enemies.length) {
+        if (numAttacks.length === enemies.length) {
           setCombatLog((prev) => [...prev, "NEXT TURN"]);
           setEnemyAttacks([]);
         } else {
