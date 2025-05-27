@@ -56,8 +56,6 @@ describe("Equipment Component", () => {
     render(<Equipment />);
     const removeButton = screen.getAllByRole("button", { name: /X/i })[0];
     fireEvent.click(removeButton);
-    //maneuvers = ["Bash"];
-    //render(<Equipment />);
     await waitFor(() => {
       expect(screen.queryByText("Bludgeon")).not.toBeInTheDocument();
     });
