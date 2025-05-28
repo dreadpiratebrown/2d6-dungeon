@@ -32,6 +32,8 @@ export const Dungeon = () => {
       pendingDoors: 0,
       currentRoom: null,
       secretDoor: false,
+      exitShaft: false,
+      shaftAreas: [],
     };
 
     stateRef.current = state;
@@ -93,6 +95,15 @@ export const Dungeon = () => {
       }
     }
 
+    if (store.exitShaft.length > 0) {
+      const shaft = document.createElement("div");
+      shaft.textContent = "E";
+      shaft.classList.add("exitShaft");
+      shaft.style.left = store.exitShaft[0];
+      shaft.style.top = store.exitShaft[1];
+      document.getElementById("root").append(shaft);
+    }
+
     init();
   }, []);
 
@@ -119,6 +130,71 @@ export const Dungeon = () => {
     }
   };
 
+  const addShaft = () => {
+    const edgeRooms = [];
+    const shaftAreas = [];
+    store.rooms.forEach((room) => {
+      let top, right, bottom, left;
+      top = room.gridY === 0 ? room.w : 0;
+      right = room.gridX + room.w === GRID_SIZE ? room.h : 0;
+      bottom = room.gridY + room.h === GRID_SIZE ? room.w : 0;
+      left = room.gridX === 0 ? room.h : 0;
+      const chances = top + right + bottom + left;
+      if (chances > 0) {
+        edgeRooms.push({ room, chances, top, right, bottom, left });
+      }
+    });
+    edgeRooms.forEach((room) => {
+      const ctx = stateRef.current.ctx;
+      ctx.globalAlpha = 0.75;
+      ctx.fillStyle = "#8be5f9";
+      if (room.top) {
+        const rect = {
+          x: room.room.x,
+          y: 0,
+          w: room.room.w * CELL_SIZE,
+          h: CELL_SIZE,
+        };
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        shaftAreas.push(rect);
+      }
+      if (room.right) {
+        const rect = {
+          x: GRID_SIZE * CELL_SIZE - CELL_SIZE,
+          y: room.room.y,
+          w: CELL_SIZE,
+          h: room.room.h * CELL_SIZE,
+        };
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        shaftAreas.push(rect);
+      }
+      if (room.bottom) {
+        const rect = {
+          x: room.room.x,
+          y: GRID_SIZE * CELL_SIZE - CELL_SIZE,
+          w: room.room.w * CELL_SIZE,
+          h: CELL_SIZE,
+        };
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        shaftAreas.push(rect);
+      }
+      if (room.left) {
+        const rect = {
+          x: 0,
+          y: room.room.y,
+          w: CELL_SIZE,
+          h: room.room.h * CELL_SIZE,
+        };
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        shaftAreas.push(rect);
+      }
+      ctx.globalAlpha = 1;
+    });
+    store.addMessage("Click where you want to search for the exit shaft.");
+    stateRef.current.shaftAreas = shaftAreas;
+    stateRef.current.exitShaft = true;
+  };
+
   return (
     <>
       <h1>Level 1: The Entry</h1>
@@ -129,7 +205,7 @@ export const Dungeon = () => {
         height="600"
       ></canvas>
       <button onClick={addSecretDoor}>Create Secret Door</button>
-      <button>Create Shaft to Outside</button>
+      <button onClick={addShaft}>Create Exit Shaft</button>
       <button>Create Stairs Down</button>
     </>
   );

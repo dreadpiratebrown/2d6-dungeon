@@ -11,7 +11,7 @@
 
 .uiWrapper {
   display: flex;
-  gap: 1rem;
+  gap: 20px;
 }
 
 .tabs {
@@ -30,4 +30,15 @@
 
 .gameLog button {
   padding: 0;
+}
+
+.exitShaft {
+  align-items: center;
+  background: white;
+  border: 1px solid black;
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  position: absolute;
+  width: 20px;
 }

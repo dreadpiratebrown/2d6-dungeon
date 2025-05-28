@@ -3,6 +3,7 @@ export const useGameStore = (set) => ({
   dungeon_level: 1,
   rooms: [],
   doors: [],
+  exitShaft: [],
   addMessage: (msg) => {
     msg += "\n";
     set((state) => ({
@@ -23,6 +24,7 @@ export const useGameStore = (set) => ({
       dungeon_level: 1,
       rooms: [],
       doors: [],
+      exitShaft: [],
     });
   },
 });
