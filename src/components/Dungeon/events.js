@@ -39,8 +39,109 @@ export const onMouseMove = (e, state) => {
 };
 
 export const onClick = (e, state) => {
-  const { canvas, ctx, CELL_SIZE, GRID_SIZE, grid, store, secretDoor } = state;
+  const {
+    canvas,
+    ctx,
+    CELL_SIZE,
+    GRID_SIZE,
+    grid,
+    store,
+    secretDoor,
+    exitShaft,
+    shaftAreas,
+  } = state;
   const { rooms, doors } = useBoundStore.getState();
+
+  if (exitShaft && shaftAreas?.length) {
+    const rect = canvas.getBoundingClientRect();
+    const canvasTop = canvas.offsetTop;
+    const canvasLeft = canvas.offsetLeft;
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const gx = Math.floor(mx / CELL_SIZE) * CELL_SIZE;
+    const gy = Math.floor(my / CELL_SIZE) * CELL_SIZE;
+    const shaft = document.createElement("div");
+    shaft.textContent = "E";
+    shaft.classList.add("exitShaft");
+
+    for (const area of shaftAreas) {
+      if (
+        mx >= area.x &&
+        mx <= area.x + area.w &&
+        my >= area.y &&
+        my <= area.y + area.h
+      ) {
+        if (area.y === 0) {
+          const chances = area.w / CELL_SIZE;
+          store.addMessage(`Rolling ${chances} times to search for the shaft.`);
+          const roll = new DiceRoll(`${chances}d6=6`);
+          if (roll.total === 0) {
+            store.addMessage("No exit shaft was found.");
+            return;
+          }
+          store.addMessage("Exit shaft found!");
+          shaft.style.left = `${canvasLeft + gx}px`;
+          shaft.style.top = `${canvasTop + gy - CELL_SIZE}px`;
+          document.getElementById("root").appendChild(shaft);
+        }
+        if (area.x === GRID_SIZE * CELL_SIZE - CELL_SIZE) {
+          const chances = area.h / CELL_SIZE;
+          store.addMessage(`Rolling ${chances} times to search for the shaft.`);
+          const roll = new DiceRoll(`${chances}d6=6`);
+          if (roll.total === 0) {
+            store.addMessage("No exit shaft was found.");
+            return;
+          }
+          store.addMessage("Exit shaft found!");
+          shaft.style.left = `${canvasLeft + gx + CELL_SIZE}px`;
+          shaft.style.top = `${canvasTop + gy}px`;
+          document.getElementById("root").appendChild(shaft);
+        }
+        if (area.y === GRID_SIZE * CELL_SIZE - CELL_SIZE) {
+          const chances = area.w / CELL_SIZE;
+          store.addMessage(`Rolling ${chances} times to search for the shaft.`);
+          const roll = new DiceRoll(`${chances}d6=6`);
+          if (roll.total === 0) {
+            store.addMessage("No exit shaft was found.");
+            return;
+          }
+          store.addMessage("Exit shaft found!");
+          shaft.style.left = `${canvasLeft + gx}px`;
+          shaft.style.top = `${canvasTop + gy + CELL_SIZE}px`;
+          document.getElementById("root").appendChild(shaft);
+        }
+        if (area.x === 0) {
+          const chances = area.h / CELL_SIZE;
+          store.addMessage(`Rolling ${chances} times to search for the shaft.`);
+          const roll = new DiceRoll(`${chances}d6=6`);
+          if (roll.total === 0) {
+            store.addMessage("No exit shaft was found.");
+            return;
+          }
+          store.addMessage("Exit shaft found!");
+          shaft.style.left = `${canvasLeft + gx - CELL_SIZE}px`;
+          shaft.style.top = `${canvasTop + gy}px`;
+          document.getElementById("root").appendChild(shaft);
+        }
+        store.setDungeon({ exitShaft: [shaft.style.left, shaft.style.top] });
+        state.exitShaft = false;
+        state.shaftAreas = [];
+        render(
+          ctx,
+          canvas,
+          CELL_SIZE,
+          GRID_SIZE,
+          rooms,
+          doors,
+          state.pendingDoors,
+          state.currentRoom,
+          state.floatingRoom
+        );
+        return;
+      }
+    }
+  }
+
   if (state.pendingDoors > 0 && state.currentRoom) {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
