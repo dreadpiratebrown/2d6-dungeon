@@ -49,8 +49,9 @@ export const onClick = (e, state) => {
     secretDoor,
     exitShaft,
     shaftAreas,
+    isPlacingStairs,
   } = state;
-  const { rooms, doors } = useBoundStore.getState();
+  const { rooms, doors, stairs } = useBoundStore.getState();
 
   if (exitShaft && shaftAreas?.length) {
     const rect = canvas.getBoundingClientRect();
@@ -142,6 +143,37 @@ export const onClick = (e, state) => {
     }
   }
 
+  if (isPlacingStairs && !stairs) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const gx = Math.floor(mx / CELL_SIZE);
+    const gy = Math.floor(my / CELL_SIZE);
+    const stairsObject = {
+      x: gx * CELL_SIZE,
+      y: gy * CELL_SIZE,
+      w: CELL_SIZE,
+      h: CELL_SIZE,
+      gridX: gx,
+      gridY: gy,
+    };
+    store.setDungeon({ stairs: stairsObject });
+    state.isPlacingStairs = false;
+    state.stairs = stairsObject;
+    render(
+      ctx,
+      canvas,
+      CELL_SIZE,
+      GRID_SIZE,
+      rooms,
+      doors,
+      state.pendingDoors,
+      state.currentRoom,
+      state.floatingRoom,
+      state.stairs
+    );
+  }
+
   if (state.pendingDoors > 0 && state.currentRoom) {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
@@ -227,7 +259,8 @@ export const onClick = (e, state) => {
         doors,
         state.pendingDoors,
         state.currentRoom,
-        state.floatingRoom
+        state.floatingRoom,
+        state.stairs
       );
     }
 
@@ -293,7 +326,8 @@ export const onClick = (e, state) => {
           doors,
           state.pendingDoors,
           state.currentRoom,
-          state.floatingRoom
+          state.floatingRoom,
+          state.stairs
         );
       }
     });
@@ -385,7 +419,8 @@ export const onClick = (e, state) => {
       doors,
       state.pendingDoors,
       state.currentRoom,
-      state.floatingRoom
+      state.floatingRoom,
+      state.stairs
     );
     return;
   }
@@ -484,6 +519,7 @@ export const onKeyDown = (e, state) => {
     doors,
     pendingDoors,
     currentRoom,
+    stairs,
   } = state;
   if (e.key === "Escape" && state.isPlacingRoom && state.floatingRoom) {
     state.floatingRoom = null;
@@ -497,7 +533,8 @@ export const onKeyDown = (e, state) => {
       doors,
       pendingDoors,
       currentRoom,
-      state.floatingRoom
+      state.floatingRoom,
+      stairs
     );
     store.addMessage("Room placement cancelled.");
   }
@@ -512,7 +549,8 @@ export const onKeyDown = (e, state) => {
       doors,
       pendingDoors,
       currentRoom,
-      state.floatingRoom
+      state.floatingRoom,
+      stairs
     );
     store.addMessage("Secret door placement cancelled.");
   }
@@ -543,7 +581,8 @@ export const onKeyDown = (e, state) => {
       doors,
       state.pendingDoors,
       state.currentRoom,
-      state.floatingRoom
+      state.floatingRoom,
+      state.stairs
     );
     store.addMessage("Door placement cancelled.");
   }

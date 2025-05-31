@@ -96,6 +96,19 @@ export function drawDoor(door, ctx) {
   }
 }
 
+const drawStairs = (ctx, stairs) => {
+  console.log("stairs: ", stairs);
+  const img = new Image();
+  img.src = "/stairs.png";
+  if (img.complete) {
+    ctx.drawImage(img, stairs.x, stairs.y, stairs.w, stairs.h);
+  } else {
+    img.onload = () => {
+      ctx.drawImage(img, stairs.x, stairs.y, stairs.w, stairs.h);
+    };
+  }
+};
+
 export function drawDashedBorder(room, ctx, CELL_SIZE) {
   ctx.setLineDash([5, 5]);
   ctx.strokeStyle = "blue";
@@ -117,12 +130,19 @@ export function render(
   doors,
   pendingDoors,
   currentRoom,
-  floatingRoom
+  floatingRoom,
+  stairs
 ) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawGrid(ctx, canvas, CELL_SIZE, GRID_SIZE);
   rooms.forEach((room) => drawRoom(room, ctx, CELL_SIZE));
   doors.forEach((door) => drawDoor(door, ctx));
+
+  console.log("stairs: ", stairs);
+
+  if (stairs) {
+    drawStairs(ctx, stairs);
+  }
 
   if (pendingDoors > 0 && currentRoom) {
     drawDashedBorder(currentRoom, ctx, CELL_SIZE);

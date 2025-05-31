@@ -4,6 +4,7 @@ export const useGameStore = (set) => ({
   rooms: [],
   doors: [],
   exitShaft: [],
+  stairs: null,
   addMessage: (msg) => {
     msg += "\n";
     set((state) => ({
@@ -25,6 +26,7 @@ export const useGameStore = (set) => ({
       rooms: [],
       doors: [],
       exitShaft: [],
+      stairs: null,
     });
   },
 });
