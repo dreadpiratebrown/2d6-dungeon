@@ -34,6 +34,8 @@ export const Dungeon = () => {
       secretDoor: false,
       exitShaft: false,
       shaftAreas: [],
+      stairs: store.stairs,
+      isPlacingStairs: false,
     };
 
     stateRef.current = state;
@@ -195,6 +197,18 @@ export const Dungeon = () => {
     stateRef.current.exitShaft = true;
   };
 
+  const addStairs = () => {
+    const state = stateRef.current;
+    if (state.stairs) {
+      alert("You have already placed stairs down on this level.");
+      return;
+    }
+    state.isPlacingStairs = true;
+    store.addMessage(
+      "Click where you want to place the stairs down to the next level."
+    );
+  };
+
   return (
     <>
       <h1>Level 1: The Entry</h1>
@@ -206,7 +220,7 @@ export const Dungeon = () => {
       ></canvas>
       <button onClick={addSecretDoor}>Create Secret Door</button>
       <button onClick={addShaft}>Create Exit Shaft</button>
-      <button>Create Stairs Down</button>
+      <button onClick={addStairs}>Create Stairs Down</button>
     </>
   );
 };
