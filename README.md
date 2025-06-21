@@ -17,8 +17,6 @@ A dungeon crawler designed by Toby Lancaster
 - Figure out a way to load room data by file (level one, level two, etc.)
 - POLT1 (generic tables) 11 - roll on patrol table - how to get around this?
 - reference tables like Armour, Magic Scrolls, etc.
-- shaft to outside - button could go under map
-- stairs to next level - button could go under map
 - write debugging scripts - preset hero, all doors are locked, etc.
 - town component
 - special/extra tables?

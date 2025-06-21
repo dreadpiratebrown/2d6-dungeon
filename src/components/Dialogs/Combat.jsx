@@ -26,8 +26,13 @@ export const Combat = ({ openModal, closeModal, enemyIds, onDeath }) => {
   const [playerPrimeAttack, setPlayerPrimeAttack] = useState(false);
   const [exactStrike, setExactStrike] = useState(false);
   const [playerIsDead, setPlayerIsDead] = useState(false);
+  const [thrownWeapon, setThrownWeapon] = useState();
+  const [throwMod, setThrowMod] = useState(0);
+  const [didThrow, setDidThrow] = useState(false);
+  const [throwLog, setThrowLog] = useState([]);
   const ref = useRef();
   const deadRef = useRef();
+  const throwRef = useRef();
   const store = useBoundStore();
   const playerManeuvers = store.maneuvers.map((m) =>
     maneuvers.find((item) => item.name === m)
@@ -332,6 +337,66 @@ export const Combat = ({ openModal, closeModal, enemyIds, onDeath }) => {
     }
   };
 
+  const throwWeapon = (enemy, index) => {
+    setDidThrow(true);
+    const primary = new DiceRoll("d6").total;
+    const secondary = new DiceRoll("d6").total;
+    setThrowLog((prev) => [...prev, `You rolled [${primary}, ${secondary}]`]);
+    let block = 0;
+    enemy.interrupts.forEach((i) => {
+      if (i.primary.includes(primary)) {
+        block += i.modifier;
+      }
+      if (i.secondary.includes(secondary)) {
+        block += i.modifier;
+      }
+    });
+    setThrowLog((prev) => [
+      ...prev,
+      `The ${enemy.name} blocks for ${block} damage`,
+    ]);
+    let damage = 0;
+    if (thrownWeapon === "axe") {
+      damage = 6 + throwMod + block;
+    } else if (thrownWeapon === "knife") {
+      damage = 4 + throwMod + block;
+    } else if (thrownWeapon === "dart") {
+      damage = 2 + throwMod + block;
+    }
+    setThrowLog((prev) => [
+      ...prev,
+      `Your ${thrownWeapon} hits for ${damage} total damage`,
+    ]);
+    const newHp = enemy.hp - damage < 0 ? 0 : enemy.hp - damage;
+    updateEnemy(index, { hp: newHp });
+    if (newHp === 0) {
+      setCombatLog((prev) => [...prev, `The ${enemy.name} is dead.`]);
+      setEnemies((prevEnemies) => {
+        const updated = [...prevEnemies];
+        updated.splice(index, 1);
+
+        if (updated.length === 0) {
+          setCombatLog((prev) => [...prev, "All enemies defeated."]);
+          setCombatLog((prev) => [...prev, "END COMBAT"]);
+        } else {
+          setTargetedEnemyIndex((prev) =>
+            prev >= updated.length ? updated.length - 1 : prev
+          );
+          setAttackingEnemyIndex((prev) =>
+            prev >= updated.length ? updated.length - 1 : prev
+          );
+          setCombatLog((prev) => [...prev, "BEGIN COMBAT"]);
+        }
+
+        return updated;
+      });
+
+      return;
+    } else {
+      setCombatLog((prev) => [...prev, "BEGIN COMBAT"]);
+    }
+  };
+
   const endCombat = () => {
     let totalXp = 0;
     origEnemies.forEach((enemy) => (totalXp = totalXp + enemy.xp));
@@ -428,6 +493,12 @@ export const Combat = ({ openModal, closeModal, enemyIds, onDeath }) => {
                 );
               })}
             </div>
+            <button
+              onClick={() => throwRef.current.showModal()}
+              disabled={didThrow}
+            >
+              Throw a Weapon
+            </button>
           </div>
           <div className={styles.enemy}>
             {enemies.map((enemy, index) => {
@@ -744,6 +815,111 @@ export const Combat = ({ openModal, closeModal, enemyIds, onDeath }) => {
           <img src="/skull.svg" alt="dead" width="200" />
           <h1>YOU ARE DEAD</h1>
           <button onClick={onDeath}>Main Menu</button>
+        </div>
+      </dialog>
+      <dialog ref={throwRef} className={styles.throwing}>
+        <div className={styles.combatUi}>
+          <div className={styles.column}>
+            <h2>Inventory</h2>
+            <p className={styles.inventory}>{store.small_items}</p>
+            <h2>Large Items</h2>
+            <ol>
+              {store.large_items.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ol>
+          </div>
+          <div className={styles.column}>
+            <div className={styles.options}>
+              <label>
+                <img src="/axe.svg" alt="throwing axe" />
+                <br />
+                Axe
+                <br />
+                <input
+                  type="radio"
+                  name="throwing"
+                  value="axe"
+                  onClick={() => setThrownWeapon("axe")}
+                />
+              </label>
+              <label>
+                <img src="/knife.svg" alt="throwing knife" />
+                <br />
+                Knife
+                <br />
+                <input
+                  type="radio"
+                  name="throwing"
+                  value="knife"
+                  onClick={() => setThrownWeapon("knife")}
+                />
+              </label>
+              <label>
+                <img src="/dart.svg" alt="throwing dart" />
+                <br />
+                Dart
+                <br />
+                <input
+                  type="radio"
+                  name="throwing"
+                  value="dart"
+                  onClick={() => setThrownWeapon("dart")}
+                />
+              </label>
+            </div>
+            <div className={styles.modifier}>
+              <label htmlFor="modifier">Modifier</label>
+              <input
+                type="number"
+                id="modifier"
+                value={throwMod}
+                onChange={(e) => setThrowMod(e.target.value)}
+              />
+            </div>
+            {enemies.map((enemy, index) => (
+              <div className={styles.target} key={index}>
+                <div className={styles.targetName}>
+                  <h2>{enemy.name}</h2>
+                  <button
+                    disabled={!thrownWeapon}
+                    onClick={() => throwWeapon(enemy, index)}
+                  >
+                    Throw
+                  </button>
+                </div>
+                <div className={styles.abilityBlock}>
+                  <h3>Interrupts</h3>
+                  {enemy?.interrupts.map((i) => {
+                    return (
+                      <div className={styles.interrupt} key={i.name}>
+                        <div>{i.name}</div>
+                        <div>
+                          {i.primary.length > 0 &&
+                            `Primary ${i.primary.join(", ")}`}
+                          {i.secondary.length > 0 &&
+                            `Secondary ${i.secondary.join(", ")}`}
+                        </div>
+                        <div>{i.modifier} damage</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className={styles.throwLog}>
+            {/* This needs to be a cancel/reset function, not just a close */}
+            {!didThrow && (
+              <button onClick={() => throwRef.current.close()}>CANCEL</button>
+            )}
+            {didThrow && (
+              <button onClick={() => throwRef.current.close()}>CLOSE</button>
+            )}
+            {[...throwLog].reverse().map((m, index) => (
+              <span key={index}>{m}</span>
+            ))}
+          </div>
         </div>
       </dialog>
     </>

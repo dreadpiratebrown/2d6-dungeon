@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { drawDashedBorder, drawDoor, drawGrid, render } from "./gridRenderer";
+import {
+  drawDashedBorder,
+  drawDoor,
+  drawGrid,
+  preloadDoorImages,
+  render,
+} from "./gridRenderer";
 import { createRoom, setRedrawDoorHandler } from "./dungeonManager";
 import { onMouseMove, onClick, onKeyDown } from "./events";
 import { useBoundStore } from "../../store/boundStore";
@@ -40,11 +46,25 @@ export const Dungeon = () => {
 
     stateRef.current = state;
 
+    preloadDoorImages();
+
     setRedrawDoorHandler((doorId) => {
-      const door = useBoundStore.getState().doors.find((d) => d.id === doorId);
-      if (door) {
-        drawDoor(door, ctx); // assumes `ctx` is available in this scope
-      }
+      // const door = useBoundStore.getState().doors.find((d) => d.id === doorId);
+      // if (door) {
+      //   drawDoor(door, ctx); // assumes `ctx` is available in this scope
+      // }
+      render(
+        state.ctx,
+        state.canvas,
+        state.CELL_SIZE,
+        state.GRID_SIZE,
+        state.rooms,
+        useBoundStore.getState().doors,
+        state.pendingDoors,
+        state.currentRoom,
+        state.floatingRoom,
+        state.stairs
+      );
     });
 
     canvas.addEventListener("mousemove", (e) => onMouseMove(e, state));
@@ -92,7 +112,8 @@ export const Dungeon = () => {
           state.doors,
           state.pendingDoors,
           state.currentRoom,
-          state.floatingRoom
+          state.floatingRoom,
+          state.stairs
         );
       }
     }

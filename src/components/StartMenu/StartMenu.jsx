@@ -21,5 +21,8 @@ export const StartMenu = ({ onNewClick, onLoadClick }) => {
     // Lock Door by siti muayanah from <a href="https://thenounproject.com/browse/icons/term/lock-door/" target="_blank" title="Lock Door Icons">Noun Project</a> (CC BY 3.0)
     // Skull by DaeSung LEE from <a href="https://thenounproject.com/browse/icons/term/skull/" target="_blank" title="Skull Icons">Noun Project</a> (CC BY 3.0)
     // Target by Barracuda from <a href="https://thenounproject.com/browse/icons/term/target/" target="_blank" title="Target Icons">Noun Project</a> (CC BY 3.0)
+    // Axe by Elin Erkani from <a href="https://thenounproject.com/browse/icons/term/axe/" target="_blank" title="Axe Icons">Noun Project</a> (CC BY 3.0)
+    // Knife by Simon Mettler from <a href="https://thenounproject.com/browse/icons/term/knife/" target="_blank" title="Knife Icons">Noun Project</a> (CC BY 3.0)
+    // dart by Marco Livolsi from <a href="https://thenounproject.com/browse/icons/term/dart/" target="_blank" title="dart Icons">Noun Project</a> (CC BY 3.0)
   );
 };
