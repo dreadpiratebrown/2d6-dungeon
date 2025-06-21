@@ -57,6 +57,27 @@ export function drawRoom(room, ctx, CELL_SIZE) {
 
 const doorImageCache = {};
 
+export const preloadDoorImages = () => {
+  const types = [
+    "archways",
+    "curtains",
+    "metal doors",
+    "portcullises",
+    "reinforced doors",
+    "wooden doors",
+  ];
+  const directions = ["top", "bottom", "left", "right"];
+  types.forEach((type) => {
+    directions.forEach((dir) => {
+      const key = `${type}-${dir}`;
+      const img = new Image();
+      img.src =
+        dir === "left" || dir === "right" ? `/${type}-2.png` : `/${type}.png`;
+      doorImageCache[key] = img;
+    });
+  });
+};
+
 function getDoorImage(type, direction) {
   const key = `${type}-${direction}`;
   if (doorImageCache[key]) return doorImageCache[key];
@@ -97,7 +118,6 @@ export function drawDoor(door, ctx) {
 }
 
 const drawStairs = (ctx, stairs) => {
-  console.log("stairs: ", stairs);
   const img = new Image();
   img.src = "/stairs.png";
   if (img.complete) {
@@ -137,8 +157,6 @@ export function render(
   drawGrid(ctx, canvas, CELL_SIZE, GRID_SIZE);
   rooms.forEach((room) => drawRoom(room, ctx, CELL_SIZE));
   doors.forEach((door) => drawDoor(door, ctx));
-
-  console.log("stairs: ", stairs);
 
   if (stairs) {
     drawStairs(ctx, stairs);

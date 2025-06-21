@@ -52,7 +52,8 @@
 }
 
 .player,
-.enemy {
+.enemy,
+.column {
   border-right: 1px solid black;
   overflow: auto;
   padding: 1rem;
@@ -221,4 +222,47 @@
 
 ::backdrop {
   background: rgba(0, 0, 0, 0.25);
+}
+
+.options {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+
+  label {
+    flex: 1;
+  }
+}
+
+.modifier {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 1rem 0;
+
+  input {
+    width: 3rem;
+  }
+}
+
+/* .target {
+  padding: 1rem;
+} */
+
+.targetName {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.throwLog {
+  display: flex;
+  flex-direction: column;
+  max-height: 330px;
+  padding: 0.5rem;
 }
