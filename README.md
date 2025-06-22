@@ -7,11 +7,10 @@ A dungeon crawler designed by Toby Lancaster
 ## To Do
 
 - Write combat logic
-  - throwing weapons
   - potions & scrolls
   - special effects from enemies
   - mishap & prime attack damage - automatic?
-  - refactor combat component
+  - refactor combat logic so I don't need MISS buttons
 - Call on the gods
 - Way to initiate combat manually
 - Figure out a way to load room data by file (level one, level two, etc.)
