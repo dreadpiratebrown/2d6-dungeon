@@ -5,6 +5,7 @@ import styles from "./styles.module.css";
 export const Combat = ({ openModal, closeModal, enemyIds, onDeath }) => {
   const {
     enemies,
+    targetedEnemyIndex,
     setTargetedEnemyIndex,
     attackingEnemyIndex,
     setAttackingEnemyIndex,
@@ -66,6 +67,7 @@ export const Combat = ({ openModal, closeModal, enemyIds, onDeath }) => {
           <Enemies
             enemies={enemies}
             targetedEnemy={targetedEnemy}
+            targetedEnemyIndex={targetedEnemyIndex}
             setTargetedEnemyIndex={setTargetedEnemyIndex}
             updateEnemy={updateEnemy}
             turn={turn}

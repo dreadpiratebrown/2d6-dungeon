@@ -93,6 +93,16 @@ export const useCombat = ({ openModal, closeModal, enemyIds }) => {
           return;
         }
       });
+      const tempMaxShift = store.shift + shiftAdjustment;
+      const miss = !playerManeuvers.some((m) => {
+        const shiftCost =
+          Math.abs(m.primary - primary) + Math.abs(m.secondary - secondary);
+        return shiftCost <= tempMaxShift;
+      });
+      if (miss) {
+        setCombatLog((prev) => [...prev, "You have missed."]);
+        nextTurn();
+      }
     } else {
       setEnemyRoll([primary, secondary]);
       setPlayerRoll([0, 0]);
@@ -112,6 +122,18 @@ export const useCombat = ({ openModal, closeModal, enemyIds }) => {
       if (primary === 1 && secondary === 1) {
         setCombatLog((prev) => [...prev, `Mishap! ${attackingEnemy.mishap}`]);
         return;
+      }
+      const tempMaxShift = store.shift + shiftAdjustment;
+      const miss = !attackingEnemy.maneuvers.some((m) => {
+        const shiftCost =
+          Math.abs(m.primary - primary) + Math.abs(m.secondary - secondary);
+        return shiftCost <= tempMaxShift;
+      });
+      if (miss) {
+        setCombatLog((prev) => [...prev, `${attackingEnemy.name} has missed.`]);
+        const updatedEnemyAttacks = [...enemyAttacks, attackingEnemyIndex];
+        setEnemyAttacks(updatedEnemyAttacks);
+        nextTurn(updatedEnemyAttacks);
       }
     }
   };
@@ -409,6 +431,7 @@ export const useCombat = ({ openModal, closeModal, enemyIds }) => {
 
   return {
     enemies,
+    targetedEnemyIndex,
     setTargetedEnemyIndex,
     attackingEnemyIndex,
     setAttackingEnemyIndex,
