@@ -3,6 +3,7 @@ import styles from "./styles.module.css";
 export const Enemies = ({
   enemies,
   targetedEnemy,
+  targetedEnemyIndex,
   setTargetedEnemyIndex,
   updateEnemy,
   turn,
@@ -20,13 +21,13 @@ export const Enemies = ({
           <div key={index}>
             <h2>
               {enemy?.name}{" "}
-              {enemies.length > 1 && enemy.name === targetedEnemy.name ? (
+              {enemies.length > 1 && index === targetedEnemyIndex ? (
                 <img src="/target.svg" alt="target" width="32" />
               ) : (
                 <></>
               )}
             </h2>
-            {enemy.name !== targetedEnemy.name ? (
+            {index !== targetedEnemyIndex ? (
               <button
                 onClick={() => setTargetedEnemyIndex(index)}
                 className={styles.targetBtn}

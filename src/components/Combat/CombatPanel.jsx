@@ -92,11 +92,6 @@ export const CombatPanel = ({
               &darr;
             </button>
           </div>
-          <div>
-            <button disabled={!hasRolledThisTurn} onClick={nextTurn}>
-              MISS
-            </button>
-          </div>
         </div>
         <div className={styles.header}>
           <div>
@@ -168,21 +163,6 @@ export const CombatPanel = ({
               }
             >
               &darr;
-            </button>
-          </div>
-          <div>
-            <button
-              disabled={!hasRolledThisTurn}
-              onClick={() => {
-                const updatedEnemyAttacks = [
-                  ...enemyAttacks,
-                  attackingEnemyIndex,
-                ];
-                setEnemyAttacks(updatedEnemyAttacks);
-                nextTurn(updatedEnemyAttacks);
-              }}
-            >
-              MISS
             </button>
           </div>
         </div>

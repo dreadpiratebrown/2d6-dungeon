@@ -162,7 +162,7 @@ export const largeRooms = [
     roll: 12,
     name: "Library",
     description:
-      "Lined with bookshelves, this huge library is protected by two GUARDS. There are also tables covered in scrolls. If you survive roll on #SCT1 and #SCT2.",
+      "Lined with bookshelves, this huge library is protected by two GUARDS. There are also tables covered in scrolls. If you survive roll on #SCT1 and #SCT2. <event:combat:GUARD:GUARD>",
     exits: "wooden doors",
     unique: true,
   },
